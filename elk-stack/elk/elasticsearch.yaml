@@ -102,6 +102,7 @@ kind: Service
 apiVersion: v1
 metadata:
   name: elasticsearch
+  namespace: elastic
   labels:
     app: elasticsearch
 spec:
