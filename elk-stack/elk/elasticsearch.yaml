@@ -52,6 +52,13 @@ spec:
             value: "elasticsearch-master-0,elasticsearch-master-1,elasticsearch-master-2"
           - name: ES_JAVA_OPTS
             value: "-Xms1g -Xmx1g"
+          - name: xpack.security.enabled
+            value: "true"
+          - name: ELASTIC_PASSWORD
+            valueFrom:
+              secretKeyRef:
+                name: elastic-config-credentials
+                key: password
       initContainers:
       - name: fix-permissions
         image: busybox
