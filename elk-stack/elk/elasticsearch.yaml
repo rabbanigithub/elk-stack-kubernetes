@@ -3,6 +3,14 @@ kind: Namespace
 metadata:
   name: elastic
 ---
+apiVersion: v1
+kind: Secret
+metadata:
+  name: elastic-config-credentials
+  namespace: elastic
+data:
+  password: UEBzc3cwZA==
+---
 apiVersion: apps/v1
 kind: StatefulSet
 metadata:
