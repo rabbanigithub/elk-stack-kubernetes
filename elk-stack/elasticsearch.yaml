@@ -62,6 +62,8 @@ spec:
             value: "-Xms1g -Xmx1g"
           - name: xpack.security.enabled
             value: "true"
+          - name: xpack.security.authc.api_key.enabled
+            value: "true"
           - name: ELASTIC_PASSWORD
             valueFrom:
               secretKeyRef:
