@@ -3,7 +3,7 @@ kind: StatefulSet
 metadata:
   name: elasticsearch-master
 spec:
-  serviceName: elasticsearch # provides association with our previously created elasticsearch Service.
+  serviceName: elasticsearch
   replicas: 3
   selector:
     matchLabels:
@@ -15,19 +15,19 @@ spec:
     spec:
       containers:
       - name: elasticsearch
-        image: docker.elastic.co/elasticsearch/elasticsearch:7.15.0
+        image: docker.elastic.co/elasticsearch/elasticsearch:7.15.1
         resources:
             limits:
               cpu: 1000m
               memory: "2Gi"
             requests:
-              cpu: 100m
-              memory: "2Gi"
+              cpu: 500m
+              memory: "1Gi"
         ports:
-        - containerPort: 9200 # for REST API.
+        - containerPort: 9200
           name: rest
           protocol: TCP
-        - containerPort: 9300 # for inter-node communication.
+        - containerPort: 9300
           name: inter-node
           protocol: TCP
         volumeMounts:
@@ -40,7 +40,6 @@ spec:
             valueFrom:
               fieldRef:
                 fieldPath: metadata.name
-          # sets a list of master-eligible nodes in the cluster.
           - name: discovery.seed_hosts
             value: "es-cluster-0.elasticsearch, es-cluster-1.elasticsearch,es-cluster-2.elasticsearch"
           # specifies a list of master-eligible nodes that will participate in the master election process.
