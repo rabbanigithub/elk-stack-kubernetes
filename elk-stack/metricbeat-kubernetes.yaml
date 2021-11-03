@@ -3,7 +3,7 @@ apiVersion: v1
 kind: ConfigMap
 metadata:
   name: metricbeat-daemonset-config
-  namespace: default
+  namespace: elastic
   labels:
     k8s-app: metricbeat
 data:
@@ -47,13 +47,13 @@ data:
                     - /var/run/secrets/kubernetes.io/serviceaccount/ca.crt
                   period: 30s
                 # Uncomment this to get k8s events:
-                #- module: kubernetes
-                #  metricsets:
-                #    - event
+                - module: kubernetes
+                  metricsets:
+                    - event
         # To enable hints based autodiscover uncomment this:
-        #- type: kubernetes
-        #  node: ${NODE_NAME}
-        #  hints.enabled: true
+        - type: kubernetes
+          node: ${NODE_NAME}
+          hints.enabled: true
 
     processors:
       - add_cloud_metadata:
@@ -70,7 +70,7 @@ apiVersion: v1
 kind: ConfigMap
 metadata:
   name: metricbeat-daemonset-modules
-  namespace: default
+  namespace: elastic
   labels:
     k8s-app: metricbeat
 data:
@@ -130,7 +130,7 @@ apiVersion: apps/v1
 kind: DaemonSet
 metadata:
   name: metricbeat
-  namespace: default
+  namespace: elastic
   labels:
     k8s-app: metricbeat
 spec:
@@ -162,7 +162,10 @@ spec:
         - name: ELASTICSEARCH_USERNAME
           value: elastic
         - name: ELASTICSEARCH_PASSWORD
-          value: changeme
+          valueFrom:
+            secretKeyRef:
+              name: elastic-config-credentials
+              key: password
         - name: ELASTIC_CLOUD_ID
           value:
         - name: ELASTIC_CLOUD_AUTH
@@ -225,7 +228,7 @@ metadata:
 subjects:
 - kind: ServiceAccount
   name: metricbeat
-  namespace: default
+  namespace: elastic
 roleRef:
   kind: ClusterRole
   name: metricbeat
@@ -235,11 +238,11 @@ apiVersion: rbac.authorization.k8s.io/v1
 kind: RoleBinding
 metadata:
   name: metricbeat
-  namespace: default
+  namespace: elastic
 subjects:
   - kind: ServiceAccount
     name: metricbeat
-    namespace: default
+    namespace: elastic
 roleRef:
   kind: Role
   name: metricbeat
@@ -249,11 +252,11 @@ apiVersion: rbac.authorization.k8s.io/v1
 kind: RoleBinding
 metadata:
   name: metricbeat-kubeadm-config
-  namespace: default
+  namespace: elastic
 subjects:
   - kind: ServiceAccount
     name: metricbeat
-    namespace: default
+    namespace: elastic
 roleRef:
   kind: Role
   name: metricbeat-kubeadm-config
@@ -309,7 +312,7 @@ kind: Role
 metadata:
   name: metricbeat
   # should be the namespace where metricbeat is running
-  namespace: default
+  namespace: elastic
   labels:
     k8s-app: metricbeat
 rules:
@@ -323,7 +326,7 @@ apiVersion: rbac.authorization.k8s.io/v1
 kind: Role
 metadata:
   name: metricbeat-kubeadm-config
-  namespace: default
+  namespace: elastic
   labels:
     k8s-app: metricbeat
 rules:
@@ -338,7 +341,7 @@ apiVersion: v1
 kind: ServiceAccount
 metadata:
   name: metricbeat
-  namespace: default
+  namespace: elastic
   labels:
     k8s-app: metricbeat
 ---

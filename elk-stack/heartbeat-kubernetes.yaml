@@ -2,7 +2,7 @@ apiVersion: v1
 kind: ConfigMap
 metadata:
   name: heartbeat-deployment-config
-  namespace: default
+  namespace: elastic
   labels:
     k8s-app: heartbeat
 data:
@@ -57,7 +57,7 @@ apiVersion: apps/v1
 kind: Deployment
 metadata:
   name: heartbeat
-  namespace: default
+  namespace: elastic
   labels:
     k8s-app: heartbeat
 spec:
@@ -87,7 +87,10 @@ spec:
         - name: ELASTICSEARCH_USERNAME
           value: elastic
         - name: ELASTICSEARCH_PASSWORD
-          value: changeme
+          valueFrom:
+            secretKeyRef:
+              name: elastic-config-credentials
+              key: password
         - name: ELASTIC_CLOUD_ID
           value:
         - name: ELASTIC_CLOUD_AUTH
@@ -129,7 +132,7 @@ metadata:
 subjects:
 - kind: ServiceAccount
   name: heartbeat
-  namespace: default
+  namespace: elastic
 roleRef:
   kind: ClusterRole
   name: heartbeat
@@ -139,11 +142,11 @@ apiVersion: rbac.authorization.k8s.io/v1
 kind: RoleBinding
 metadata:
   name: heartbeat
-  namespace: default
+  namespace: elastic
 subjects:
   - kind: ServiceAccount
     name: heartbeat
-    namespace: default
+    namespace: elastic
 roleRef:
   kind: Role
   name: heartbeat
@@ -153,11 +156,11 @@ apiVersion: rbac.authorization.k8s.io/v1
 kind: RoleBinding
 metadata:
   name: heartbeat-kubeadm-config
-  namespace: default
+  namespace: elastic
 subjects:
   - kind: ServiceAccount
     name: heartbeat
-    namespace: default
+    namespace: elastic
 roleRef:
   kind: Role
   name: heartbeat-kubeadm-config
@@ -187,7 +190,7 @@ kind: Role
 metadata:
   name: heartbeat
   # should be the namespace where heartbeat is running
-  namespace: default
+  namespace: elastic
   labels:
     k8s-app: heartbeat
 rules:
@@ -201,7 +204,7 @@ apiVersion: rbac.authorization.k8s.io/v1
 kind: Role
 metadata:
   name: heartbeat-kubeadm-config
-  namespace: default
+  namespace: elastic
   labels:
     k8s-app: heartbeat
 rules:
@@ -216,7 +219,7 @@ apiVersion: v1
 kind: ServiceAccount
 metadata:
   name: heartbeat
-  namespace: default
+  namespace: elastic
   labels:
     k8s-app: heartbeat
 ---
