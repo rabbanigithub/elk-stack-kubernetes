@@ -3,7 +3,7 @@ apiVersion: v1
 kind: ConfigMap
 metadata:
   name: auditbeat-config
-  namespace: default
+  namespace: elastic
   labels:
     k8s-app: auditbeat
 data:
@@ -55,7 +55,7 @@ apiVersion: v1
 kind: ConfigMap
 metadata:
   name: auditbeat-daemonset-modules
-  namespace: default
+  namespace: elastic
   labels:
     k8s-app: auditbeat
 data:
@@ -90,7 +90,7 @@ apiVersion: apps/v1
 kind: DaemonSet
 metadata:
   name: auditbeat
-  namespace: default
+  namespace: elastic
   labels:
     k8s-app: auditbeat
 spec:
@@ -122,7 +122,10 @@ spec:
         - name: ELASTICSEARCH_USERNAME
           value: elastic
         - name: ELASTICSEARCH_PASSWORD
-          value: changeme
+          valueFrom:
+            secretKeyRef:
+              name: elastic-config-credentials
+              key: password
         - name: ELASTIC_CLOUD_ID
           value:
         - name: ELASTIC_CLOUD_AUTH
@@ -219,7 +222,7 @@ metadata:
 subjects:
 - kind: ServiceAccount
   name: auditbeat
-  namespace: default
+  namespace: elastic
 roleRef:
   kind: ClusterRole
   name: auditbeat
@@ -229,11 +232,11 @@ apiVersion: rbac.authorization.k8s.io/v1
 kind: RoleBinding
 metadata:
   name: auditbeat
-  namespace: default
+  namespace: elastic
 subjects:
   - kind: ServiceAccount
     name: auditbeat
-    namespace: default
+    namespace: elastic
 roleRef:
   kind: Role
   name: auditbeat
@@ -243,11 +246,11 @@ apiVersion: rbac.authorization.k8s.io/v1
 kind: RoleBinding
 metadata:
   name: auditbeat-kubeadm-config
-  namespace: default
+  namespace: elastic
 subjects:
   - kind: ServiceAccount
     name: auditbeat
-    namespace: default
+    namespace: elastic
 roleRef:
   kind: Role
   name: auditbeat-kubeadm-config
@@ -276,7 +279,7 @@ kind: Role
 metadata:
   name: auditbeat
   # should be the namespace where auditbeat is running
-  namespace: default
+  namespace: elastic
   labels:
     k8s-app: auditbeat
 rules:
@@ -290,7 +293,7 @@ apiVersion: rbac.authorization.k8s.io/v1
 kind: Role
 metadata:
   name: auditbeat-kubeadm-config
-  namespace: default
+  namespace: elastic
   labels:
     k8s-app: auditbeat
 rules:
@@ -305,7 +308,7 @@ apiVersion: v1
 kind: ServiceAccount
 metadata:
   name: auditbeat
-  namespace: default
+  namespace: elastic
   labels:
     k8s-app: auditbeat
 ---
